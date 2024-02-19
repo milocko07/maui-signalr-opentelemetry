@@ -1,4 +1,5 @@
-﻿using MauiAppClient.Services;
+﻿using System.Diagnostics.Metrics;
+using MauiAppClient.Services;
 
 namespace MauiAppClient;
 
@@ -6,9 +7,13 @@ public partial class MainPage : ContentPage
 {
     int count = 0;
 
+    private readonly Meter _meter = new Meter("counterHubMeter");
+    private readonly Counter<int> _hubTelemetryCounter;
+
     public MainPage()
     {
         InitializeComponent();
+        _hubTelemetryCounter = _meter.CreateCounter<int>("maui-hub-counter-3", "hub", "A count of things");
     }
 
     protected async override void OnAppearing()
@@ -21,14 +26,17 @@ public partial class MainPage : ContentPage
     {
         await CounterHubService.StartAsync();
 
-        CounterHubService.EnableReceivingMessages<int>("ReceiveCounter", (message) =>
+        CounterHubService.EnableReceivingMessages<int>("ReceiveCounter", (counter) =>
         {
             // Render new message on the UI on the main thread
             Dispatcher.Dispatch(() =>
             {
-                CounterBtn.Text = $"Clicked {message} times";
-
+                CounterBtn.Text = $"Clicked {counter} times";
                 SemanticScreenReader.Announce(CounterBtn.Text);
+
+                // Here goes the timeseries telemetry
+                _hubTelemetryCounter.Add(1);
+                //_hubTelemetryCounter.Add(counter);
             });
         });
     }
