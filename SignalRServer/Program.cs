@@ -17,7 +17,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<CounterHub>("/counterHub");
 app.MapHub<StockHub>("/stockHub");
 
 

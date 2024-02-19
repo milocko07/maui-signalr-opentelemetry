@@ -6,13 +6,9 @@ public partial class MainPage : ContentPage
 {
     int count = 0;
 
-    //HubConnection _connection;
-
     public MainPage()
     {
         InitializeComponent();
-
-        //_connection = HubConnectionService.EnableStockConnection();
     }
 
     protected async override void OnAppearing()
@@ -23,16 +19,16 @@ public partial class MainPage : ContentPage
 
     private async Task InitializeAsync()
     {
-        //await _connection.StartAsync();
-        await HubConnectionService.StartStockConnectionAsync();
+        await CounterHubService.StartAsync();
 
-        HubConnectionService.EnableStockMessages<string>("ReceiveMessage", (message) =>
+        CounterHubService.EnableReceivingMessages<int>("ReceiveCounter", (message) =>
         {
-            // Update UI on the main thread
+            // Render new message on the UI on the main thread
             Dispatcher.Dispatch(() =>
             {
-                CounterBtn.Text = $"Clicked {message} time";
+                CounterBtn.Text = $"Clicked {message} times";
 
+                SemanticScreenReader.Announce(CounterBtn.Text);
             });
         });
     }
@@ -41,13 +37,14 @@ public partial class MainPage : ContentPage
     {
         count++;
 
-        await HubConnectionService.SendStockAsync<string>("SendMessage", count.ToString());
+        await CounterHubService.SendMessageAsync<int>("SendCounter", count);
 
+        // Avoiding this to simulate sending and rendering in real time.
         //if (count == 1)
         //    CounterBtn.Text = $"Clicked {count} time";
         //else
         //    CounterBtn.Text = $"Clicked {count} times";
 
-        SemanticScreenReader.Announce(CounterBtn.Text);
+        //SemanticScreenReader.Announce(CounterBtn.Text);
     }
 }

@@ -21,9 +21,9 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        HubConnectionService.SetStockConnection(
+        CounterHubService.SetConnection(
             new HubConnectionBuilder()
-            .WithUrl("https://localhost:7007/chatHub")
+            .WithUrl("https://localhost:7007/counterHub")
             .Build());
 
         return builder.Build();
