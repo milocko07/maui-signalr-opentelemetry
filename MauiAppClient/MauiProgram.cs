@@ -1,25 +1,31 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MauiAppClient.Services;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 
-namespace MauiAppClient
+namespace MauiAppClient;
+
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
-        }
+        HubConnectionService.SetStockConnection(
+            new HubConnectionBuilder()
+            .WithUrl("https://localhost:7007/chatHub")
+            .Build());
+
+        return builder.Build();
     }
 }
