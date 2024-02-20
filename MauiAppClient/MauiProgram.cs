@@ -25,11 +25,16 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<MainPage>();
 
-        // Include signalR connection.
+        // Include signalR connections.
         CounterHubService.SetConnection(
             new HubConnectionBuilder()
             .WithUrl("https://localhost:7007/counterHub")
             .Build());
+
+        StockHubService.SetConnection(
+           new HubConnectionBuilder()
+           .WithUrl("https://localhost:7007/stockHub")
+           .Build());
 
         // Include OpenTelemetry meter provider.
         var meterProvider = Sdk

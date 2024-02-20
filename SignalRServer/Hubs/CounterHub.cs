@@ -1,6 +1,6 @@
-﻿namespace SignalRServer;
+﻿using Microsoft.AspNetCore.SignalR;
 
-using Microsoft.AspNetCore.SignalR;
+namespace SignalRServer;
 
 public class CounterHub : Hub
 {

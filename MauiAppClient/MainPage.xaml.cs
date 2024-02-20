@@ -1,12 +1,14 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
+using System.Text.Json;
 using MauiAppClient.Services;
 
 namespace MauiAppClient;
 
 public partial class MainPage : ContentPage
 {
-    int count = 0;
-
+    public ObservableCollection<Stock> Stocks { get { return stocks; } }
+    private readonly ObservableCollection<Stock> stocks = new ObservableCollection<Stock>();
     private readonly Meter _meter = new Meter("counterHubMeter");
     private readonly Counter<int> _hubTelemetryCounter;
 
@@ -19,6 +21,7 @@ public partial class MainPage : ContentPage
     protected async override void OnAppearing()
     {
         base.OnAppearing();
+        LoadInitialStocks();
         await InitializeAsync();
     }
 
@@ -31,28 +34,36 @@ public partial class MainPage : ContentPage
             // Render new message on the UI on the main thread
             Dispatcher.Dispatch(() =>
             {
-                CounterBtn.Text = $"Clicked {counter} times";
-                SemanticScreenReader.Announce(CounterBtn.Text);
+                CounterMessage.Text = $"Received {counter} times";
+                SemanticScreenReader.Announce(CounterMessage.Text);
 
                 // Here goes the timeseries telemetry
                 _hubTelemetryCounter.Add(1);
                 //_hubTelemetryCounter.Add(counter);
             });
         });
+
+        await StockHubService.StartAsync();
+
+        StockHubService.EnableReceivingMessages<string>("PriceUpdate", (stockModel) =>
+        {
+            var receivedStock = JsonSerializer.Deserialize<Stock>(stockModel);
+
+            var foundStock = stocks.FirstOrDefault(s => s.Symbol == receivedStock?.Symbol);
+
+            if (foundStock != null)
+            {
+                foundStock.Price = receivedStock.Price;
+            }
+        });
     }
 
-    private async void OnCounterClicked(object sender, EventArgs e)
+    private void LoadInitialStocks()
     {
-        count++;
+        stocks.Add(new Stock { Symbol = "MSFT", Name = "Microsoft", Icon = "icon.png", Price = 0 });
+        stocks.Add(new Stock { Symbol = "GOOG", Name = "Google", Icon = "icon.png", Price = 0 });
+        stocks.Add(new Stock { Symbol = "AAPL", Name = "Apple", Icon = "icon.png", Price = 0 });
 
-        //await CounterHubService.SendMessageAsync<int>("SendCounter", count);
-
-        // Avoiding this to simulate sending and rendering in real time.
-        //if (count == 1)
-        //    CounterBtn.Text = $"Clicked {count} time";
-        //else
-        //    CounterBtn.Text = $"Clicked {count} times";
-
-        //SemanticScreenReader.Announce(CounterBtn.Text);
+        stocksCollectionView.ItemsSource = stocks;
     }
 }
