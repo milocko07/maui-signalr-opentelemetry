@@ -45,7 +45,7 @@ public partial class MainPage : ContentPage
     {
         count++;
 
-        await CounterHubService.SendMessageAsync<int>("SendCounter", count);
+        //await CounterHubService.SendMessageAsync<int>("SendCounter", count);
 
         // Avoiding this to simulate sending and rendering in real time.
         //if (count == 1)
