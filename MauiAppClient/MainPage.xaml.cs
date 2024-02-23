@@ -9,13 +9,20 @@ public partial class MainPage : ContentPage
 {
     public ObservableCollection<Stock> Stocks { get { return stocks; } }
     private readonly ObservableCollection<Stock> stocks = new ObservableCollection<Stock>();
+
     private readonly Meter _meter = new Meter("counterHubMeter");
     private readonly Counter<int> _hubTelemetryCounter;
+    private readonly Counter<int> _hubTelemetryMicrosoftCounter;
+    private readonly Counter<int> _hubTelemetryGoogleCounter;
+    private readonly Counter<int> _hubTelemetryAppleCounter;
 
     public MainPage()
     {
         InitializeComponent();
         _hubTelemetryCounter = _meter.CreateCounter<int>("maui-hub-counter-1", "hub", "A count of stocks");
+        _hubTelemetryMicrosoftCounter = _meter.CreateCounter<int>("maui-hub-counter-microsoft-1", "hub", "A count of microsoft stocks");
+        _hubTelemetryGoogleCounter = _meter.CreateCounter<int>("maui-hub-counter-google-1", "hub", "A count of google stocks");
+        _hubTelemetryAppleCounter = _meter.CreateCounter<int>("maui-hub-counter-apple-1", "hub", "A count of apple stocks");
     }
 
     protected async override void OnAppearing()
@@ -34,7 +41,7 @@ public partial class MainPage : ContentPage
             // Render new message on the UI on the main thread
             Dispatcher.Dispatch(() =>
             {
-                CounterMessage.Text = $"Received {counter} times";
+                CounterMessage.Text = $"Counted {counter} times";
                 SemanticScreenReader.Announce(CounterMessage.Text);
 
                 // Here goes the timeseries telemetry
@@ -54,9 +61,23 @@ public partial class MainPage : ContentPage
             if (foundStock != null)
             {
                 foundStock.Price = receivedStock.Price;
+
+                switch (receivedStock.Symbol)
+                {
+                    case "MSFT":
+                        _hubTelemetryMicrosoftCounter.Add(1);
+                        break;
+                    case "GOOG":
+                        _hubTelemetryGoogleCounter.Add(1);
+                        break;
+                    case "AAPL":
+                        _hubTelemetryAppleCounter.Add(1);
+                        break;
+                }
             }
         });
     }
+
 
     private void LoadInitialStocks()
     {
