@@ -15,7 +15,7 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
-        _hubTelemetryCounter = _meter.CreateCounter<int>("maui-hub-counter-3", "hub", "A count of things");
+        _hubTelemetryCounter = _meter.CreateCounter<int>("maui-hub-counter-1", "hub", "A count of stocks");
     }
 
     protected async override void OnAppearing()

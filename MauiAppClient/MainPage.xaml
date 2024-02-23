@@ -2,8 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MauiAppClient.MainPage"
-             Title="Real-Time Simulations"
-             xmlns:local="clr-namespace:DataTemplates">
+             Title="Real-Time Simulations">
 
     <ScrollView>
         <VerticalStackLayout
@@ -17,21 +16,15 @@
                 SemanticProperties.Description="dot net bot in a race car number eight" />
 
             <Label
-                 Text="Counter in Real Time:"
-                 Style="{StaticResource Headline}"
-                 SemanticProperties.HeadingLevel="Level1" />    
+                Text="Stocks in Real Time:"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" Grid.Row="0"/>  
+
             <Label
                  x:Name="CounterMessage"
-                 Text="Received 0 times"
+                 Text="Count 0 times"
                  Style="{StaticResource SubHeadline}"
                  SemanticProperties.HeadingLevel="Level1" />
-
-            <!--<Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />-->
 
             <BoxView HeightRequest="1" Color="Black"/>
 
@@ -41,49 +34,25 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Label
-                      Text="Stocks in Real Time:"
-                      Style="{StaticResource Headline}"
-                      SemanticProperties.HeadingLevel="Level1" Grid.Row="0"/>
-
                 <CollectionView Grid.Row="1" x:Name="stocksCollectionView" ItemsSource="{Binding Stocks}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <ContentView>
-                                <Frame BackgroundColor="#2b2b2b" CornerRadius="14" Margin="2">
+                                <Frame BackgroundColor="#1976D2" CornerRadius="14" Margin="2">
                                     <Grid>
                                         <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-
-                                        <Ellipse Stroke="White" Grid.RowSpan="2" 
-                                                 WidthRequest="60"
-                                                 HeightRequest="60"
-                                                 HorizontalOptions="Start"
-                                                 Fill="WhiteSmoke" 
-                                                 StrokeThickness="1" 
-                                                 Margin="0,0,10,0"/>
-
-                                        <Label Grid.Row="0" Grid.Column="1" 
-                                               TextColor="White"
-                                               Text="{Binding Symbol}"
-                                               FontAttributes="Bold" />
-
-                                        <Label Grid.Row="2" Grid.Column="1" 
-                                               TextColor="White"
-                                               Text="{Binding Name}"
-                                               FontAttributes="Bold" />
-
-                                        <Label Grid.Row="3" Grid.Column="1" 
-                                               TextColor="White"
-                                               Text="{Binding Price, Mode=TwoWay}"
-                                               FontAttributes="Italic"
-                                               VerticalOptions="End" />
+                                        <Label Grid.Row="0" Grid.Column="1" TextColor="White" Text="{Binding Symbol}" FontAttributes="Bold" />
+                                        <Label Grid.Row="1" Grid.Column="1" TextColor="White" Text="{Binding Name}" FontAttributes="Bold" />
+                                        <Label Grid.Row="5" Grid.Column="1" TextColor="White" Text="{Binding Price}" FontAttributes="Italic" VerticalOptions="End" />
                                     </Grid>
                                 </Frame>
                             </ContentView>
