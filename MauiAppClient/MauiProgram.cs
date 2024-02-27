@@ -40,7 +40,7 @@ public static class MauiProgram
         var meterProvider = Sdk
             .CreateMeterProviderBuilder()
             .AddMeter("counterHubMeter")
-            .AddPrometheusHttpListener(options => options.UriPrefixes = new string[] { "http://localhost:9465/" })
+            .AddPrometheusHttpListener(options => options.UriPrefixes = new string[] { "http://localhost:9464/" })
             .Build();
 
         builder.Services.AddSingleton(meterProvider); 

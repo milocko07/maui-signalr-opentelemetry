@@ -5,12 +5,13 @@ using MauiAppClient.Services;
 
 namespace MauiAppClient;
 
-public partial class MainPage : ContentPage
+public partial class MainPage : ContentPage, IDisposable
 {
     public ObservableCollection<Stock> Stocks { get { return stocks; } }
     private readonly ObservableCollection<Stock> stocks = new ObservableCollection<Stock>();
 
-    private readonly Meter _meter = new Meter("counterHubMeter");
+    // Instrumentation
+    private readonly Meter _meterRecorder = new Meter("counterHubMeter");
     private readonly Counter<int> _hubTelemetryCounter;
     private readonly Counter<int> _hubTelemetryMicrosoftCounter;
     private readonly Counter<int> _hubTelemetryGoogleCounter;
@@ -19,10 +20,10 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
-        _hubTelemetryCounter = _meter.CreateCounter<int>("maui-hub-counter-1", "hub", "A count of stocks");
-        _hubTelemetryMicrosoftCounter = _meter.CreateCounter<int>("maui-hub-counter-microsoft-1", "hub", "A count of microsoft stocks");
-        _hubTelemetryGoogleCounter = _meter.CreateCounter<int>("maui-hub-counter-google-1", "hub", "A count of google stocks");
-        _hubTelemetryAppleCounter = _meter.CreateCounter<int>("maui-hub-counter-apple-1", "hub", "A count of apple stocks");
+        _hubTelemetryCounter = _meterRecorder.CreateCounter<int>("maui-hub-counter-1", "hub", "A count of stocks");
+        _hubTelemetryMicrosoftCounter = _meterRecorder.CreateCounter<int>("maui-hub-counter-microsoft-1", "hub", "A count of microsoft stocks");
+        _hubTelemetryGoogleCounter = _meterRecorder.CreateCounter<int>("maui-hub-counter-google-1", "hub", "A count of google stocks");
+        _hubTelemetryAppleCounter = _meterRecorder.CreateCounter<int>("maui-hub-counter-apple-1", "hub", "A count of apple stocks");
     }
 
     protected async override void OnAppearing()
@@ -86,5 +87,10 @@ public partial class MainPage : ContentPage
         stocks.Add(new Stock { Symbol = "AAPL", Name = "Apple", Icon = "icon.png", Price = 0 });
 
         stocksCollectionView.ItemsSource = stocks;
+    }
+
+    public void Dispose()
+    {
+        _meterRecorder.Dispose();
     }
 }
