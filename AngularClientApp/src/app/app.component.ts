@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 
+interface Stock {
+  Symbol: string;
+  Name: string;
+  Price: number;
+}
 
 @Component({
   selector: 'app-root',
@@ -11,26 +16,54 @@ export class AppComponent implements OnInit {
 
   title = 'AngularClientApp';
 
-  private connection: HubConnection;
-  public joined = false;
+  private counterConnection: HubConnection;
+  private stockConnection: HubConnection;
   public counter = 0;
 
+  public stocks: Stock[] = [
+    { Symbol: 'MSFT', Name: 'Microsoft', Price: 0 },
+    { Symbol: 'GOOG', Name: 'Google', Price: 0 },
+    { Symbol: 'AAPL', Name: 'Apple', Price: 0 },
+  ];
+
   constructor() {
-    this.connection = new HubConnectionBuilder()
+    this.counterConnection = new HubConnectionBuilder()
       .withUrl('https://localhost:7007/counterHub')
       .build();
 
-    this.connection.on("ReceiveCounter", message => {
+    this.counterConnection.on("ReceiveCounter", message => {
       this.counter = message;
     });
-    //this.connection.on("NewMessage", message => this.newMessage(message));
-    //this.connection.on("LeftUser", message => this.leftUser(message));
+
+    this.stockConnection = new HubConnectionBuilder()
+      .withUrl('https://localhost:7007/stockHub')
+      .build();
+
+    this.stockConnection.on("PriceUpdate", message => {
+      let receivedStock: Stock = JSON.parse(message);
+
+      if (receivedStock) {
+        console.log(message);
+
+        let foundStock = this.stocks.find(stock => stock.Symbol === receivedStock.Symbol);
+        if (foundStock) {
+          foundStock.Price = receivedStock.Price;
+        }
+      }
+    });
   }
 
   ngOnInit(): void {
-    this.connection.start()
+    this.counterConnection.start()
       .then(_ => {
-        console.log('SignalR connection Started');
+        console.log('SignalR counter connection Started');
+      }).catch(error => {
+        return console.log(error);
+      });
+
+    this.stockConnection.start()
+      .then(_ => {
+        console.log('SignalR stock connection Started');
       }).catch(error => {
         return console.log(error);
       });

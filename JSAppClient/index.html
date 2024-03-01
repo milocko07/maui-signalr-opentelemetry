@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalR JavaScript Client Example</title>
+</head>
+<body>
+    <div>
+        <input type="text" id="username" placeholder="Enter your username">
+        <input type="text" id="message" placeholder="Enter your message">
+        <button onclick="sendMessage()">Send Message</button>
+    </div>
+    <ul id="messages"></ul>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.signalr/2.4.3/jquery.signalR.min.js"></script> -->
+    <script>
+        $(document).ready(function () {
+            debugger;
+            const connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:7007/counterHub")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+            async function start() {
+                try {
+                    await connection.start();
+                    console.log("SignalR Connected.");
+                } catch (err) {
+                    console.log(err);
+                    setTimeout(start, 5000);
+                }
+            };
+
+            connection.onclose(async () => {
+                await start();
+            });
+
+            // Start the connection.
+            start();
+
+            // var connection = $.hubConnection("https://localhost:7007/");
+            // var hubProxy = connection.createHubProxy('counterHub');
+
+            // hubProxy.on('broadcastMessage', function (user, message) {
+            //     $('#messages').append('<li><strong>' + user + '</strong>: ' + message + '</li>');
+            // });
+
+            // connection.start().done(function () {
+            //     console.log('Connected to SignalR Hub');
+            // });
+
+            // window.sendMessage = function () {
+            //     var user = $('#username').val();
+            //     var message = $('#message').val();
+            //     hubProxy.invoke('sendMessage', user, message);
+            // };
+        });
+    </script>
+</body>
+</html>

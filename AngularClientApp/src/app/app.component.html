@@ -218,6 +218,24 @@
       <h1>Hello, {{ title }}</h1>
       <p>Congratulations! Your app is running. 🎉</p>
       <div><strong>Received counter times:</strong> {{counter}}</div>
+      <div>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Name</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stock of stocks; let i = index;">
+              <td>{{ stock.Symbol }}</td>
+              <td>{{ stock.Name }}</td>
+              <td>{{ stock.Price }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">
