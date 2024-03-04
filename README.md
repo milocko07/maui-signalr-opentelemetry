@@ -14,7 +14,7 @@ The goal is to showcase how to monitor and visualize metrics from the MauiAppCli
 
 ## Setup
 
-1. Clone this repository:
+1. Clone o download this repository:
 
    ```bash
    git clone https://github.com/milocko07/maui-signalr-opentelemetry
