@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(); // here might go azure signalR service.
 
 var app = builder.Build();
 
@@ -17,9 +17,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapHub<ChatHub>("/chatHub");
-app.MapHub<StockHub>("/stockHub");
+// here might be CORS configuration
 
+
+app.MapHub<CounterHub>("/counterHub");
+app.MapHub<StockHub>("/stockHub");
 
 app.UseHttpsRedirection();
 

@@ -1,25 +1,97 @@
-﻿namespace MauiAppClient
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
+using System.Text.Json;
+using MauiAppClient.Services;
+
+namespace MauiAppClient;
+
+public partial class MainPage : ContentPage, IDisposable
 {
-    public partial class MainPage : ContentPage
+    public ObservableCollection<Stock> Stocks { get { return stocks; } }
+    private readonly ObservableCollection<Stock> stocks = new ObservableCollection<Stock>();
+
+    // Instrumentation
+    private readonly Meter _meterRecorder = new Meter("counterHubMeter");
+    private readonly Counter<int> _hubTelemetryCounter;
+    private readonly Counter<int> _hubTelemetryMicrosoftCounter;
+    private readonly Counter<int> _hubTelemetryGoogleCounter;
+    private readonly Counter<int> _hubTelemetryAppleCounter;
+
+    public MainPage()
     {
-        int count = 0;
-
-        public MainPage()
-        {
-            InitializeComponent();
-        }
-
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
-        }
+        InitializeComponent();
+        _hubTelemetryCounter = _meterRecorder.CreateCounter<int>("maui-hub-counter-1", "hub", "A count of stocks");
+        _hubTelemetryMicrosoftCounter = _meterRecorder.CreateCounter<int>("maui-hub-counter-microsoft-1", "hub", "A count of microsoft stocks");
+        _hubTelemetryGoogleCounter = _meterRecorder.CreateCounter<int>("maui-hub-counter-google-1", "hub", "A count of google stocks");
+        _hubTelemetryAppleCounter = _meterRecorder.CreateCounter<int>("maui-hub-counter-apple-1", "hub", "A count of apple stocks");
     }
 
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
+        LoadInitialStocks();
+        await InitializeAsync();
+    }
+
+    private async Task InitializeAsync()
+    {
+        await CounterHubService.StartAsync();
+
+        CounterHubService.EnableReceivingMessages<int>("ReceiveCounter", (counter) =>
+        {
+            // Render new message on the UI on the main thread
+            Dispatcher.Dispatch(() =>
+            {
+                CounterMessage.Text = $"Counted {counter} times";
+                SemanticScreenReader.Announce(CounterMessage.Text);
+
+                // Here goes the timeseries telemetry
+                _hubTelemetryCounter.Add(1);
+                // if you want to accumulate the counter:
+                //_hubTelemetryCounter.Add(counter);
+            });
+        });
+
+        await StockHubService.StartAsync();
+
+        StockHubService.EnableReceivingMessages<string>("PriceUpdate", (stockModel) =>
+        {
+            var receivedStock = JsonSerializer.Deserialize<Stock>(stockModel);
+
+            var foundStock = stocks.FirstOrDefault(s => s.Symbol == receivedStock?.Symbol);
+
+            if (foundStock != null)
+            {
+                foundStock.Price = receivedStock.Price;
+
+                switch (receivedStock.Symbol)
+                {
+                    case "MSFT":
+                        _hubTelemetryMicrosoftCounter.Add(1);
+                        break;
+                    case "GOOG":
+                        _hubTelemetryGoogleCounter.Add(1);
+                        break;
+                    case "AAPL":
+                        _hubTelemetryAppleCounter.Add(1);
+                        break;
+                }
+            }
+        });
+    }
+
+
+    private void LoadInitialStocks()
+    {
+        stocks.Add(new Stock { Symbol = "MSFT", Name = "Microsoft", Icon = "icon.png", Price = 0 });
+        stocks.Add(new Stock { Symbol = "GOOG", Name = "Google", Icon = "icon.png", Price = 0 });
+        stocks.Add(new Stock { Symbol = "AAPL", Name = "Apple", Icon = "icon.png", Price = 0 });
+
+        stocksCollectionView.ItemsSource = stocks;
+    }
+
+    public void Dispose()
+    {
+        _meterRecorder.Dispose();
+    }
 }
