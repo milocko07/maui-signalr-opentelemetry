@@ -1,4 +1,4 @@
-# Maui App + SignalR + OpenTelemetry + Grafana
+# Maui App + SignalR + OpenTelemetry + Prometheus + Grafana
 
 ## Overview
 
