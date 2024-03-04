@@ -29,7 +29,8 @@ The goal is to showcase how to monitor and visualize metrics from the MauiAppCli
   <img width="275" alt="image" src="https://github.com/milocko07/maui-signalr-opentelemetry/assets/37205551/21ab37a4-9e1d-4399-92d7-6ee87acad034">
   <img width="959" alt="image" src="https://github.com/milocko07/maui-signalr-opentelemetry/assets/37205551/b4bb55ff-9956-4dd1-af04-3fb07e1dd1ee">
 
-8. And now you should see the telemetry data in Grafana http://localhost:3000/explore? url:
+8. And now you should see the telemetry data flowing throught Prometheus http://localhost:9090/targets?search and Grafana http://localhost:3000/explore? urls:
+  <img width="957" alt="image" src="https://github.com/milocko07/maui-signalr-opentelemetry/assets/37205551/1833ea08-73dc-45c7-a69e-1e1d36ccf44f">
   <img width="956" alt="image" src="https://github.com/milocko07/maui-signalr-opentelemetry/assets/37205551/b1bc9604-830e-4574-9e2d-6d4a8ccf2c0f">
 
 
