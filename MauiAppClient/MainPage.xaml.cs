@@ -47,6 +47,7 @@ public partial class MainPage : ContentPage, IDisposable
 
                 // Here goes the timeseries telemetry
                 _hubTelemetryCounter.Add(1);
+                // if you want to accumulate the counter:
                 //_hubTelemetryCounter.Add(counter);
             });
         });
