@@ -17,9 +17,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// here might be CORS configuration
+
+
 app.MapHub<CounterHub>("/counterHub");
 app.MapHub<StockHub>("/stockHub");
-
 
 app.UseHttpsRedirection();
 
